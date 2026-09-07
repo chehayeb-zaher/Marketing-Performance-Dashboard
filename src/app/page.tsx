@@ -14,7 +14,6 @@ import { PipelineDistributionSection } from "@/components/PipelineDistributionSe
 import { ConversionSection } from "@/components/ConversionSection";
 import { RevenueChart } from "@/components/RevenueChart";
 import { SourceSummaryTable } from "@/components/SourceSummaryTable";
-import { DataQualitySection } from "@/components/DataQualitySection";
 import { Section } from "@/components/ui/Card";
 import { LoadingState, ErrorState } from "@/components/ui/States";
 
@@ -93,12 +92,8 @@ export default function DashboardPage() {
               <RevenueChart data={data.revenueBySource} colorMap={colorMap} />
             </Section>
 
-            <Section className="pb-0">
-              <SourceSummaryTable rows={data.sourceSummary} />
-            </Section>
-
             <Section>
-              <DataQualitySection dataQuality={data.dataQuality} timezone={data.meta.range.timezone} />
+              <SourceSummaryTable rows={data.sourceSummary} />
             </Section>
           </>
         )}

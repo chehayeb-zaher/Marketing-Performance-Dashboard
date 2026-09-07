@@ -55,9 +55,12 @@ export function ConversionSection({
       <SectionHeading
         title="Stage-to-Stage Conversion by Source"
         description={
-          "Each funnel infers which stages a lead has reached from its CURRENT position in the pipeline " +
-          "(a lead sitting at stage 4 is counted as having reached stages 1–4). This is an inference based on " +
-          "current stage, not tracked stage-by-stage history."
+          <>
+            Each funnel infers which stages a lead has reached from its CURRENT position in the pipeline (a lead
+            sitting at stage 4 is counted as having reached stages 1–4).
+            <br />
+            This is an inference based on current stage, not tracked stage-by-stage history.
+          </>
         }
       />
 
@@ -83,10 +86,17 @@ export function ConversionSection({
   );
 }
 
+// Floor a segment's visual width at this fraction of the funnel's widest stage so the
+// smallest counts (often the last stage) aren't tapered down to an unreadable sliver -
+// the true value is still shown by the label, only the shape's width is padded.
+const MIN_SEGMENT_WIDTH_FRACTION = 0.16;
+
 function SourceFunnel({ source, steps, color }: { source: string; steps: ConversionStep[]; color: string }) {
+  const maxReached = Math.max(...steps.map((step) => step.reached), 1);
   const data = steps.map((step) => ({
     name: step.stageName,
     value: step.reached,
+    displayWidth: Math.max(step.reached, maxReached * MIN_SEGMENT_WIDTH_FRACTION),
     pct: step.conversionFromPrevPct,
   }));
 
@@ -98,12 +108,15 @@ function SourceFunnel({ source, steps, color }: { source: string; steps: Convers
       <ResponsiveContainer width="100%" height={FUNNEL_HEIGHT}>
         <FunnelChart accessibilityLayer margin={{ top: 8, right: 150, bottom: 8, left: 8 }}>
           <Tooltip
-            formatter={(value, _name, item) => {
-              const pct = (item?.payload as { pct: number | null } | undefined)?.pct ?? null;
-              return [`${formatNumber(Number(value ?? 0))} reached (${formatPercent(pct)} from previous)`, ""];
+            formatter={(_value, _name, item) => {
+              const payload = item?.payload as { value: number; pct: number | null } | undefined;
+              return [
+                `${formatNumber(payload?.value ?? 0)} reached (${formatPercent(payload?.pct ?? null)} from previous)`,
+                "",
+              ];
             }}
           />
-          <Funnel dataKey="value" data={data} isAnimationActive={false} fill={color} stroke="var(--surface-1)" strokeWidth={2}>
+          <Funnel dataKey="displayWidth" data={data} isAnimationActive={false} fill={color} stroke="var(--surface-1)" strokeWidth={2}>
             <LabelList position="right" dataKey="name" content={FunnelStageLabel} />
             <LabelList position="center" dataKey="value" fill="#fff" stroke="none" fontSize={11} fontWeight={600} />
           </Funnel>
@@ -140,7 +153,8 @@ function ConversionComparisonTable({
             </th>
             {transitions.map((t) => (
               <th key={t.index} scope="col" className="py-2 px-1 text-center font-medium leading-tight break-words">
-                {t.from} → {t.to}
+                {t.from}
+                <br />→ {t.to}
               </th>
             ))}
           </tr>

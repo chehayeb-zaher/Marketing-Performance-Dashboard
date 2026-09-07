@@ -12,13 +12,13 @@ type SortKey = keyof Pick<
   "source" | "leads" | "won" | "leadToWonRatePct" | "closedRevenue" | "avgWonValue"
 >;
 
-const COLUMNS: { key: SortKey; label: string; align: "left" | "right" }[] = [
+const COLUMNS: { key: SortKey; label: string; align: "left" | "center" }[] = [
   { key: "source", label: "Source", align: "left" },
-  { key: "leads", label: "Leads", align: "right" },
-  { key: "won", label: "Won opportunities", align: "right" },
-  { key: "leadToWonRatePct", label: "Lead-to-won rate", align: "right" },
-  { key: "closedRevenue", label: "Closed revenue", align: "right" },
-  { key: "avgWonValue", label: "Avg. won value", align: "right" },
+  { key: "leads", label: "Leads", align: "center" },
+  { key: "won", label: "Won opportunities", align: "center" },
+  { key: "leadToWonRatePct", label: "Lead-to-won rate", align: "center" },
+  { key: "closedRevenue", label: "Closed revenue", align: "center" },
+  { key: "avgWonValue", label: "Avg. won value", align: "center" },
 ];
 
 export function SourceSummaryTable({ rows }: { rows: SourceSummaryRow[] }) {
@@ -66,11 +66,15 @@ export function SourceSummaryTable({ rows }: { rows: SourceSummaryRow[] }) {
             <thead>
               <tr className="border-b border-black/[.1] text-ink-secondary">
                 {COLUMNS.map((col) => (
-                  <th key={col.key} scope="col" className={`py-2 px-3 font-medium ${col.align === "right" ? "text-right" : "text-left"}`}>
+                  <th
+                    key={col.key}
+                    scope="col"
+                    className={`py-2 px-3 font-medium ${col.align === "center" ? "text-center" : "text-left"}`}
+                  >
                     <button
                       type="button"
                       onClick={() => toggleSort(col.key)}
-                      className={`inline-flex items-center gap-1 hover:text-ink ${col.align === "right" ? "flex-row-reverse" : ""}`}
+                      className={`inline-flex items-center gap-1 hover:text-ink ${col.align === "center" ? "justify-center" : ""}`}
                       aria-label={`Sort by ${col.label}`}
                     >
                       {col.label}
@@ -86,15 +90,15 @@ export function SourceSummaryTable({ rows }: { rows: SourceSummaryRow[] }) {
                   <th scope="row" className="py-2 px-3 text-left font-medium text-ink whitespace-nowrap">
                     {row.source}
                   </th>
-                  <td className="py-2 px-3 text-right tabular-nums text-ink-secondary">{formatNumber(row.leads)}</td>
-                  <td className="py-2 px-3 text-right tabular-nums text-ink-secondary">{formatNumber(row.won)}</td>
-                  <td className="py-2 px-3 text-right tabular-nums text-ink-secondary">
+                  <td className="py-2 px-3 text-center tabular-nums text-ink-secondary">{formatNumber(row.leads)}</td>
+                  <td className="py-2 px-3 text-center tabular-nums text-ink-secondary">{formatNumber(row.won)}</td>
+                  <td className="py-2 px-3 text-center tabular-nums text-ink-secondary">
                     {formatPercent(row.leadToWonRatePct, 1)}
                   </td>
-                  <td className="py-2 px-3 text-right tabular-nums text-ink-secondary">
+                  <td className="py-2 px-3 text-center tabular-nums text-ink-secondary">
                     {formatCurrency(row.closedRevenue)}
                   </td>
-                  <td className="py-2 px-3 text-right tabular-nums text-ink-secondary">
+                  <td className="py-2 px-3 text-center tabular-nums text-ink-secondary">
                     {row.avgWonValue === null ? "N/A" : formatCurrency(row.avgWonValue)}
                   </td>
                 </tr>
