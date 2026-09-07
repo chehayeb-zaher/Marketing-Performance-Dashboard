@@ -56,8 +56,8 @@ export function ConversionSection({
         title="Stage-to-Stage Conversion by Source"
         description={
           <>
-            Each funnel infers which stages a lead has reached from its CURRENT position in the pipeline (a lead
-            sitting at stage 4 is counted as having reached stages 1–4).
+            Each funnel infers stages reached from a lead&apos;s CURRENT position (stage 4 is counted as having
+            reached stages 1–4).
             <br />
             This is an inference based on current stage, not tracked stage-by-stage history.
           </>
