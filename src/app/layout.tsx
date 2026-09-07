@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Paid Acquisition Performance",
+  title: "Marketing Performance",
   description: "Lead source, pipeline, conversion, and revenue performance for paid acquisition.",
 };
 

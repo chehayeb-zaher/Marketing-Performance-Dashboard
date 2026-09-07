@@ -17,6 +17,11 @@
   --status-serious: #ec835a;
   --status-critical: #d03b3b;
 
+  /* Same blue as the categorical chart palette's slot 1 (Billboard), reused as the
+     dashboard's accent color for the title and primary action button. */
+  --brand: #2a78d6;
+  --brand-hover: #1c5cab;
+
   --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
@@ -32,6 +37,8 @@
   --color-status-warning: var(--status-warning);
   --color-status-serious: var(--status-serious);
   --color-status-critical: var(--status-critical);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
   --font-sans: var(--font-sans);
 }
 
