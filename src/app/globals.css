@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+
+  --page-plane: #f9f9f7;
+  --surface-1: #fcfcfb;
+  --ink: #0b0b0b;
+  --ink-secondary: #52514e;
+  --ink-muted: #898781;
+  --gridline: #e1e0d9;
+  --axis-line: #c3c2b7;
+  --border-hairline: rgba(11, 11, 11, 0.1);
+
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@theme inline {
+  --color-page-plane: var(--page-plane);
+  --color-surface-1: var(--surface-1);
+  --color-ink: var(--ink);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-muted: var(--ink-muted);
+  --color-gridline: var(--gridline);
+  --color-axis-line: var(--axis-line);
+  --color-status-good: var(--status-good);
+  --color-status-warning: var(--status-warning);
+  --color-status-serious: var(--status-serious);
+  --color-status-critical: var(--status-critical);
+  --font-sans: var(--font-sans);
+}
+
+body {
+  background: var(--page-plane);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+/* Native date input sizing consistency across browsers. */
+input[type="date"] {
+  color-scheme: light;
+}
