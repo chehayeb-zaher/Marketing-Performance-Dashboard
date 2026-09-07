@@ -45,8 +45,17 @@ export async function buildDashboardData(params: BuildDashboardParams): Promise<
   const utcRange = toUtcInstantRange(params.range, env.REPORT_TIMEZONE);
   const rawOpportunities = await getAllOpportunities(pipeline.id, utcRange);
 
-  const contactIds = rawOpportunities.map((o) => o.contactId).filter((id): id is string => Boolean(id));
-  const contactsById = await getContactsByIds(contactIds);
+  // A full /contacts/{id} fetch is only needed when the opportunity's own `source` is
+  // blank (contact.source is the fallback) or the embedded contact summary is entirely
+  // missing (need its tags for cleaning). Every opportunities/search result already
+  // embeds contact.tags, so most opportunities need no extra request at all - this is
+  // the difference between ~3 GHL requests and ~1 per lead for pipelines with hundreds
+  // of opportunities, which otherwise risks hitting GHL's 100-req/10s rate limit and the
+  // hosting platform's function timeout.
+  const contactIdsNeedingFetch = rawOpportunities
+    .filter((o) => o.contactId && (o.contact === undefined || !(o.source && o.source.trim())))
+    .map((o) => o.contactId as string);
+  const contactsById = await getContactsByIds(contactIdsNeedingFetch);
 
   const { included, dataQuality } = transformAndClean(rawOpportunities, contactsById, knownStageIds);
 

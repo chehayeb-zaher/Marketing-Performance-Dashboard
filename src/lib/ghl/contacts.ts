@@ -2,7 +2,11 @@ import "server-only";
 import { ghlGet, mapWithConcurrency, GhlApiError } from "./http";
 import { GhlContactResponseSchema, type GhlContact } from "./schemas";
 
-const CONTACT_FETCH_CONCURRENCY = 4;
+// GHL contact fetch has no bulk-by-ID endpoint, so each contact is one request
+// (~200-300ms). At low concurrency this serializes badly for pipelines with
+// hundreds of leads and can exceed the hosting platform's function timeout.
+// 15 stays well under GHL's burst rate limit, and http.ts already retries on 429.
+const CONTACT_FETCH_CONCURRENCY = 15;
 
 /**
  * Fetches contacts by ID with bounded concurrency and maps them by contact ID.

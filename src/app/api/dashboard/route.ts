@@ -6,6 +6,10 @@ import { DEFAULT_REPORT_RANGE } from "@/lib/reportDateRange";
 import { GhlApiError } from "@/lib/ghl/http";
 
 export const dynamic = "force-dynamic";
+// Fetching contacts is one request per unique contact (no bulk-by-ID endpoint in
+// the GHL API), which can take longer than the platform's default function timeout
+// for pipelines with hundreds of leads. Raise the ceiling for headroom.
+export const maxDuration = 60;
 
 const dateStringSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "must be in YYYY-MM-DD format");
 

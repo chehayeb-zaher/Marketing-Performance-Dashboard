@@ -18,15 +18,40 @@ export type GhlQueryParams = Record<string, string | number | boolean | undefine
 const MAX_RETRIES = 5;
 const BASE_BACKOFF_MS = 500;
 
+// GHL's actual limit, confirmed from response headers (x-ratelimit-max /
+// x-ratelimit-interval-milliseconds): 100 requests per 10s, shared across every
+// endpoint on the token. Throttling to a safety margin below that avoids the 429
+// storms a naive concurrency limit alone can cause (many parallel requests all land in
+// the same window, then all retry in the same window again).
+const RATE_LIMIT_MAX_REQUESTS = 85;
+const RATE_LIMIT_WINDOW_MS = 10_000;
+const requestTimestamps: number[] = [];
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitForRateLimitSlot(): Promise<void> {
+  for (;;) {
+    const now = Date.now();
+    while (requestTimestamps.length > 0 && now - requestTimestamps[0] >= RATE_LIMIT_WINDOW_MS) {
+      requestTimestamps.shift();
+    }
+    if (requestTimestamps.length < RATE_LIMIT_MAX_REQUESTS) {
+      requestTimestamps.push(now);
+      return;
+    }
+    const waitMs = RATE_LIMIT_WINDOW_MS - (now - requestTimestamps[0]) + 25;
+    await sleep(Math.max(waitMs, 25));
+  }
 }
 
 /**
  * Low-level authenticated GET against the GoHighLevel API.
  * Never logs the Authorization header or request/response bodies containing PII.
- * Retries on 429 (rate limit) and transient 5xx errors with exponential backoff,
- * honoring a Retry-After header when the API provides one.
+ * Self-throttles to GHL's published rate limit, and retries on 429 (belt-and-suspenders
+ * for the rare race at a window boundary) and transient 5xx errors with exponential
+ * backoff, honoring a Retry-After header when the API provides one.
  */
 export async function ghlGet<T = unknown>(path: string, params?: GhlQueryParams): Promise<T> {
   const env = getGhlEnv();
@@ -41,6 +66,7 @@ export async function ghlGet<T = unknown>(path: string, params?: GhlQueryParams)
   }
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    await waitForRateLimitSlot();
     let response: Response;
     try {
       response = await fetch(url.toString(), {

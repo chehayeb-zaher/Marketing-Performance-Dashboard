@@ -21,6 +21,11 @@ export interface TransformResult {
  * (never inferred from contact names). An opportunity whose current stage id isn't one
  * of the pipeline's known stages is also excluded (defensively) so that "every stage
  * total sums to total included leads" always holds even against unexpected API data.
+ *
+ * Tags are read from the opportunity's own embedded `contact.tags` first (present on
+ * every opportunities/search result, no extra request needed) and only fall back to a
+ * fetched contact record - `contactsById`, populated only for opportunities that need it
+ * (see buildDashboard.ts) - when that embedded data wasn't available.
  */
 export function transformAndClean(
   rawOpportunities: GhlOpportunity[],
@@ -35,12 +40,14 @@ export function transformAndClean(
   let unknownStageExcludedCount = 0;
 
   for (const raw of rawOpportunities) {
-    const contact = raw.contactId ? contactsById.get(raw.contactId) : undefined;
-    if (!contact) missingContactCount += 1;
+    const fetchedContact = raw.contactId ? contactsById.get(raw.contactId) : undefined;
+    const tags = raw.contact?.tags ?? fetchedContact?.tags;
+    const hasTagInfo = raw.contact !== undefined || fetchedContact !== undefined;
+    if (!hasTagInfo) missingContactCount += 1;
 
     const reasons: string[] = [];
 
-    const matchedTags = matchedExclusionTags(contact?.tags ?? []);
+    const matchedTags = matchedExclusionTags(tags ?? []);
     if (matchedTags.length > 0) {
       reasons.push(...matchedTags.map((tag) => `excluded tag: ${tag}`));
     }
@@ -56,7 +63,7 @@ export function transformAndClean(
       continue;
     }
 
-    passed.push({ raw, contact });
+    passed.push({ raw, contact: fetchedContact });
   }
 
   const winningRawSources = passed

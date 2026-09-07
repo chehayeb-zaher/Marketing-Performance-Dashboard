@@ -36,6 +36,18 @@ export type GhlPipeline = z.infer<typeof GhlPipelineSchema>;
 
 const nullableString = z.string().nullable().optional();
 
+/**
+ * The opportunity's embedded contact summary. Deliberately NOT `.loose()` - this strips
+ * PII fields the raw API includes here (email, phone, name, companyName) at parse time,
+ * keeping only what cleaning needs (tags). This also lets the opportunities/search
+ * response double as the tag source for cleaning, avoiding a separate per-contact fetch
+ * for the common case where the opportunity already has its own `source`.
+ */
+const EmbeddedContactSchema = z.object({
+  id: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+});
+
 export const GhlOpportunitySchema = z
   .object({
     id: z.string(),
@@ -46,6 +58,7 @@ export const GhlOpportunitySchema = z
     source: nullableString,
     monetaryValue: z.union([z.number(), z.string()]).nullable().optional(),
     contactId: nullableString,
+    contact: EmbeddedContactSchema.optional(),
     createdAt: nullableString,
     updatedAt: nullableString,
     lastStatusChangeAt: nullableString,

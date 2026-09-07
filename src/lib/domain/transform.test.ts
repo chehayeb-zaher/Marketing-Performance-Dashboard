@@ -69,6 +69,21 @@ describe("transformAndClean: exclusion", () => {
     expect(dataQuality.missingContactCount).toBe(1);
   });
 
+  it("excludes based on the embedded opportunity.contact.tags, with no fetched contact needed", () => {
+    const raw = [opp({ id: "a", contact: { id: "contact-a", tags: ["sandbox"] } })];
+    const { included, excluded, dataQuality } = transformAndClean(raw, new Map(), KNOWN_STAGES);
+    expect(included).toHaveLength(0);
+    expect(excluded[0].reasons).toContain("excluded tag: sandbox");
+    expect(dataQuality.missingContactCount).toBe(0);
+  });
+
+  it("does not count a resolved embedded contact as missing, even with no fetched contact", () => {
+    const raw = [opp({ id: "a", contact: { id: "contact-a", tags: [] } })];
+    const { included, dataQuality } = transformAndClean(raw, new Map(), KNOWN_STAGES);
+    expect(included).toHaveLength(1);
+    expect(dataQuality.missingContactCount).toBe(0);
+  });
+
   it("excludes an opportunity with an unrecognized pipeline stage id", () => {
     const raw = [opp({ id: "a", pipelineStageId: "unknown-stage" })];
     const contacts = new Map([["contact-a", contact("contact-a")]]);
