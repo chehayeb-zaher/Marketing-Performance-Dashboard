@@ -22,7 +22,7 @@ export function RevenueChart({
   return (
     <Card className="p-5">
       <SectionHeading
-        title="Closed Revenue by Source"
+        title="Closed Revenue"
         description="Sum of won opportunities' value by source. Open and lost opportunities are not counted."
       />
       {data.length === 0 ? (

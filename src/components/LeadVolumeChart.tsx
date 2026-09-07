@@ -20,7 +20,7 @@ export function LeadVolumeChart({
   return (
     <Card className="p-5">
       <SectionHeading
-        title="Lead Volume by Source"
+        title="Lead Volume"
         description="Every source that produced a valid lead in the selected period, sorted highest to lowest."
       />
       {data.length === 0 ? (

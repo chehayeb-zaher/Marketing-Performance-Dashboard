@@ -54,8 +54,8 @@ export function SourceSummaryTable({ rows }: { rows: SourceSummaryRow[] }) {
   return (
     <Card className="p-5">
       <SectionHeading
-        title="Source Performance Summary"
-        description="Click a column heading to sort. Cost-per-lead and ROAS aren't shown - advertising-spend data isn't available in GoHighLevel."
+        title="Performance Summary"
+        description="Click a column heading to sort."
       />
       {rows.length === 0 ? (
         <EmptyState message="No valid leads were found for the selected date range." />

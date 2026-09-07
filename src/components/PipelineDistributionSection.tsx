@@ -30,7 +30,7 @@ export function PipelineDistributionSection({
     <Card className="p-5">
       <SectionHeading
         title="The Pipeline"
-        description="Every included lead's current stage, broken down by source. Stage order matches the pipeline exactly as configured in GoHighLevel."
+        description="Every included lead's current stage, broken down by source."
       />
 
       {distribution.grandTotal === 0 ? (
