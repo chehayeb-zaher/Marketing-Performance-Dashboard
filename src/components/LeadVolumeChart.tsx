@@ -7,7 +7,7 @@ import { formatNumber } from "@/lib/ui/format";
 import { Card, SectionHeading } from "./ui/Card";
 import { EmptyState } from "./ui/States";
 
-const BAR_WIDTH = 72;
+const BAR_WIDTH = 96;
 const CHART_HEIGHT = 340;
 
 export function LeadVolumeChart({
@@ -26,11 +26,11 @@ export function LeadVolumeChart({
       {data.length === 0 ? (
         <EmptyState message="No valid leads were found for the selected date range." />
       ) : (
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-12">
           <div className="overflow-x-auto">
-            <div style={{ minWidth: Math.max(560, data.length * BAR_WIDTH) }}>
+            <div style={{ minWidth: Math.max(640, data.length * BAR_WIDTH) }}>
               <BarChart
-                width={Math.max(560, data.length * BAR_WIDTH)}
+                width={Math.max(640, data.length * BAR_WIDTH)}
                 height={CHART_HEIGHT}
                 data={data}
                 margin={{ top: 8, right: 8, left: 0, bottom: 8 }}

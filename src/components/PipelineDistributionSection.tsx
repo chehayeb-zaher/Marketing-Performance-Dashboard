@@ -29,7 +29,7 @@ export function PipelineDistributionSection({
   return (
     <Card className="p-5">
       <SectionHeading
-        title="Where Leads Currently Sit in the Pipeline"
+        title="The Pipeline"
         description="Every included lead's current stage, broken down by source. Stage order matches the pipeline exactly as configured in GoHighLevel."
       />
 
@@ -96,11 +96,11 @@ function StageDistributionTable({ distribution }: { distribution: StageDistribut
               Stage
             </th>
             {distribution.sources.map((source) => (
-              <th key={source} scope="col" className="py-2 px-3 text-right font-medium whitespace-nowrap">
+              <th key={source} scope="col" className="py-2 px-3 text-center font-medium whitespace-nowrap">
                 {source}
               </th>
             ))}
-            <th scope="col" className="py-2 pl-3 text-right font-semibold">
+            <th scope="col" className="py-2 pl-3 text-center font-semibold">
               Stage total
             </th>
           </tr>
@@ -112,11 +112,11 @@ function StageDistributionTable({ distribution }: { distribution: StageDistribut
                 {stage.stageName}
               </th>
               {distribution.sources.map((source) => (
-                <td key={source} className="py-2 px-3 text-right tabular-nums text-ink-secondary">
+                <td key={source} className="py-2 px-3 text-center tabular-nums text-ink-secondary">
                   {formatNumber(stage.bySource[source] ?? 0)}
                 </td>
               ))}
-              <td className="py-2 pl-3 text-right font-semibold tabular-nums text-ink">
+              <td className="py-2 pl-3 text-center font-semibold tabular-nums text-ink">
                 {formatNumber(stage.total)}
               </td>
             </tr>
@@ -128,11 +128,11 @@ function StageDistributionTable({ distribution }: { distribution: StageDistribut
               Total
             </th>
             {distribution.sources.map((source) => (
-              <td key={source} className="py-2 px-3 text-right font-semibold tabular-nums text-ink">
+              <td key={source} className="py-2 px-3 text-center font-semibold tabular-nums text-ink">
                 {formatNumber(distribution.stages.reduce((sum, s) => sum + (s.bySource[source] ?? 0), 0))}
               </td>
             ))}
-            <td className="py-2 pl-3 text-right font-bold tabular-nums text-ink">
+            <td className="py-2 pl-3 text-center font-bold tabular-nums text-ink">
               {formatNumber(distribution.grandTotal)}
             </td>
           </tr>

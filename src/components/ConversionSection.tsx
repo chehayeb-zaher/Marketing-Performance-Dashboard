@@ -8,6 +8,35 @@ import { Card, SectionHeading } from "./ui/Card";
 import { EmptyState } from "./ui/States";
 
 const FUNNEL_HEIGHT = 280;
+// Extra horizontal gap between the widest part of the funnel and where the stage-name
+// label starts, so the label doesn't feel like it's touching the shape.
+const LABEL_OFFSET = 18;
+
+/** Renders the stage name as a single line (never wrapped), offset right of the funnel edge. */
+function FunnelStageLabel(props: {
+  x?: string | number;
+  y?: string | number;
+  width?: string | number;
+  height?: string | number;
+  value?: unknown;
+}) {
+  const x = Number(props.x ?? 0);
+  const y = Number(props.y ?? 0);
+  const width = Number(props.width ?? 0);
+  const height = Number(props.height ?? 0);
+  return (
+    <text
+      x={x + width + LABEL_OFFSET}
+      y={y + height / 2}
+      dy={4}
+      fontSize={11}
+      fill="var(--ink-secondary)"
+      textAnchor="start"
+    >
+      {props.value as string}
+    </text>
+  );
+}
 
 export function ConversionSection({
   conversionBySource,
@@ -67,7 +96,7 @@ function SourceFunnel({ source, steps, color }: { source: string; steps: Convers
         {source}
       </h3>
       <ResponsiveContainer width="100%" height={FUNNEL_HEIGHT}>
-        <FunnelChart accessibilityLayer margin={{ top: 8, right: 96, bottom: 8, left: 8 }}>
+        <FunnelChart accessibilityLayer margin={{ top: 8, right: 150, bottom: 8, left: 8 }}>
           <Tooltip
             formatter={(value, _name, item) => {
               const pct = (item?.payload as { pct: number | null } | undefined)?.pct ?? null;
@@ -75,13 +104,7 @@ function SourceFunnel({ source, steps, color }: { source: string; steps: Convers
             }}
           />
           <Funnel dataKey="value" data={data} isAnimationActive={false} fill={color} stroke="var(--surface-1)" strokeWidth={2}>
-            <LabelList
-              position="right"
-              dataKey="name"
-              fill="var(--ink-secondary)"
-              stroke="none"
-              fontSize={11}
-            />
+            <LabelList position="right" dataKey="name" content={FunnelStageLabel} />
             <LabelList position="center" dataKey="value" fill="#fff" stroke="none" fontSize={11} fontWeight={600} />
           </Funnel>
         </FunnelChart>
@@ -102,15 +125,21 @@ function ConversionComparisonTable({
 
   return (
     <div className="mt-6 overflow-x-auto">
-      <table className="w-full min-w-[840px] border-collapse text-sm">
+      <table className="w-full border-collapse text-sm">
         <caption className="sr-only">Stage-to-stage conversion percentage by source</caption>
+        <colgroup>
+          <col className="w-32" />
+          {transitions.map((t) => (
+            <col key={t.index} className="min-w-[92px]" />
+          ))}
+        </colgroup>
         <thead>
-          <tr className="border-b border-black/[.1] text-left text-ink-secondary">
-            <th scope="col" className="py-2 pr-4 font-medium sticky left-0 bg-surface-1">
+          <tr className="border-b border-black/[.1] text-ink-secondary">
+            <th scope="col" className="py-2 pr-2 text-left font-medium sticky left-0 bg-surface-1">
               Source
             </th>
             {transitions.map((t) => (
-              <th key={t.index} scope="col" className="py-2 px-3 text-right font-medium whitespace-nowrap">
+              <th key={t.index} scope="col" className="py-2 px-1 text-center font-medium leading-tight break-words">
                 {t.from} → {t.to}
               </th>
             ))}
@@ -119,11 +148,11 @@ function ConversionComparisonTable({
         <tbody>
           {sources.map((source) => (
             <tr key={source} className="border-b border-black/[.05]">
-              <th scope="row" className="py-2 pr-4 text-left font-medium text-ink whitespace-nowrap sticky left-0 bg-surface-1">
+              <th scope="row" className="py-2 pr-2 text-left font-medium text-ink leading-tight sticky left-0 bg-surface-1">
                 {source}
               </th>
               {conversionBySource[source].slice(1).map((step, i) => (
-                <td key={i} className="py-2 px-3 text-right tabular-nums text-ink-secondary">
+                <td key={i} className="py-2 px-1 text-center tabular-nums text-ink-secondary">
                   {formatPercent(step.conversionFromPrevPct)}
                 </td>
               ))}

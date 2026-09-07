@@ -23,7 +23,7 @@ export function SectionHeading({
     <div className="flex flex-wrap items-start justify-between gap-3 mb-4">
       <div>
         <h2 className="text-lg font-semibold text-ink tracking-tight">{title}</h2>
-        {description && <p className="text-sm text-ink-secondary mt-0.5 max-w-2xl">{description}</p>}
+        {description && <p className="text-sm text-ink-secondary mt-0.5 max-w-4xl">{description}</p>}
       </div>
       {action}
     </div>
